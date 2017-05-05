@@ -25,6 +25,8 @@ $ blockstack-tor --password "hello world"
 
 5. Try it out (work-in-progress; works in the test framework)
 ```
+# make a zonefile for duckduckgo's onion address
+
 $ cat /tmp/tordemo.zonefile
 $ORIGIN tordemo.test
 $TTL 3600
@@ -32,6 +34,7 @@ tor TXT "3g2upl4pq6kufc4m.onion"
 
 # set up Blockstack to use the test framework (not shown),
 # and register tordemo.test with the above zone file
+
 $ blockstack register tordemo.test /tmp/tordemo.zonefile
 
 # wait for it to register and confirm...
@@ -56,4 +59,18 @@ X-DuckDuckGo-Locale: en_US
 <hr><center>nginx</center>
 </body>
 </html>
+```
+
+# How to use
+
+To use in production, add a `TXT` record to your name's zone file, formatted as
+`tor "address.onion"`.  You can either manually edit your zone file, or use the
+new zone file wizard in Blockstack 0.14.2 to add the `TXT` record interactively.
+**There should be only one `tor` entry in your zone file**.
+
+Example for DuckDuckGo:
+```
+$ORIGIN duckduckgo_tor.id
+$TTL 3600
+tor TXT "3g2upl4pq6kufc4m.onion"
 ```
