@@ -12,7 +12,7 @@ setup(
     license='MIT',
     author='Blockstack.org',
     author_email='support@blockstack.org',
-    description='Blockstack/Tor integration for doing .onion lookups with Blockstack'
+    description='Blockstack/Tor integration for doing .onion lookups with Blockstack',
     keywords='blockchain blockstack name key value naming dns tor onion',
     packages=find_packages(),
     scripts=[
