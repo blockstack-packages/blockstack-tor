@@ -90,6 +90,9 @@ def blockstack_tor_resolve( name ):
     Return None on error
     """
 
+    if name == 'duckduckgo_tor.id':
+        return '3g2upl4pq6kufc4m.onion'
+
     # fetch and parse zone file...
     try:
         zonefile_data = blockstack_client.get_name_zonefile(name)
@@ -227,12 +230,14 @@ def main(argv):
     argv:
         * -p/--password <tor controller password>
         * -P/--port <tor controller port>
+        * -H/--blockstack-hostport <blockstack host:port>
     """
 
-    opts_list, prog_args = getopt.getopt(sys.argv[1:], 'p:P:',  ['password=', 'port='])
+    opts_list, prog_args = getopt.getopt(sys.argv[1:], 'p:P:H:',  ['password=', 'port=', 'blockstack-node='])
 
     password = None
     port = TOR_CONTROL_PORT
+    blockstack_hostport = None
 
     for (argname, argval) in opts_list:
         if argname == '-p' or argname == '--password':
@@ -241,7 +246,16 @@ def main(argv):
         if argname == '-P' or argname == '--port':
             port = int(argval)
 
-    blockstack_client.session()
+        if argname == '-H' or argname == '--blockstack-node':
+            blockstack_hostport = argval
+
+    if blockstack_hostport:
+        blockstack_host, blockstack_port = blockstack_client.utils.url_to_host_port(blockstack_hostport)
+        if blockstack_host is None or blockstack_port is None:
+            print >> sys.stderr, "Invalid argument: {}".format(blockstack_hostport)
+            sys.exit(1)
+
+    blockstack_client.session(server_host=blockstack_host, server_port=blockstack_port, set_global=True)
     controller = connect_tor(password=password, port=port)
     atexit.register(atexit_shutdown, controller)
     
@@ -250,5 +264,4 @@ def main(argv):
             time.sleep(1.0)
         except KeyboardInterrupt:
             break
-
-        
+ 
